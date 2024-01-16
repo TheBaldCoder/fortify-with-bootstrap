@@ -13,6 +13,7 @@ use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
 use Laravel\Fortify\Fortify;
 use Laravel\Fortify\Contracts\LoginResponse;
+use Laravel\Fortify\Contracts\RegisterResponse;
 
 class FortifyServiceProvider extends ServiceProvider
 {
@@ -21,8 +22,17 @@ class FortifyServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        // After you are logged in. You get redirected to the websites homepage.
+        // After you are logged in, you get redirected to the websites homepage.
         $this->app->instance(LoginResponse::class, new class implements LoginResponse
+        {
+            public function toResponse($request)
+            {
+                return redirect('/');
+            }
+        });
+
+        // After you register, you get redirected to the websites homepage.
+        $this->app->instance(RegisterResponse::class, new class implements RegisterResponse
         {
             public function toResponse($request)
             {
@@ -39,6 +49,11 @@ class FortifyServiceProvider extends ServiceProvider
         // Set view as Login page.
         Fortify::loginView(function () {
             return view('authentication.login');
+        });
+
+        // Set view as Register page.
+        Fortify::registerView(function () {
+            return view('authentication.register');
         });
 
 
